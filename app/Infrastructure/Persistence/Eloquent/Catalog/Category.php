@@ -2,16 +2,20 @@
 
 namespace App\Infrastructure\Persistence\Eloquent\Catalog;
 
+use Database\Factories\Catalog\CategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    /** @var class-string<\Database\Factories\Catalog\CategoryFactory> */
-    protected static $factory = \Database\Factories\Catalog\CategoryFactory::class;
+    use HasFactory;
+
+    /** @var class-string<CategoryFactory> */
+    protected static $factory = CategoryFactory::class;
 
     protected $fillable = [
         'name',

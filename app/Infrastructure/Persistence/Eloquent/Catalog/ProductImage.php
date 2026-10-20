@@ -2,13 +2,17 @@
 
 namespace App\Infrastructure\Persistence\Eloquent\Catalog;
 
+use Database\Factories\Catalog\ProductImageFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductImage extends Model
 {
-    /** @var class-string<\Database\Factories\Catalog\ProductImageFactory> */
-    protected static $factory = \Database\Factories\Catalog\ProductImageFactory::class;
+    use HasFactory;
+
+    /** @var class-string<ProductImageFactory> */
+    protected static $factory = ProductImageFactory::class;
 
     protected $fillable = [
         'product_id',

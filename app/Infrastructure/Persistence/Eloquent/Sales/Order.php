@@ -4,16 +4,20 @@ namespace App\Infrastructure\Persistence\Eloquent\Sales;
 
 use App\Domain\Sales\ValueObjects\OrderStatus;
 use App\Models\User;
+use Database\Factories\Sales\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
-    /** @var class-string<\Database\Factories\Sales\OrderFactory> */
-    protected static $factory = \Database\Factories\Sales\OrderFactory::class;
+    use HasFactory;
+
+    /** @var class-string<OrderFactory> */
+    protected static $factory = OrderFactory::class;
 
     protected $fillable = [
         'user_id',

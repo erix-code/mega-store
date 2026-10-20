@@ -2,16 +2,21 @@
 
 namespace App\Infrastructure\Persistence\Eloquent\Catalog;
 
+use App\Infrastructure\Persistence\Eloquent\Sales\OrderItem;
+use Database\Factories\Catalog\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
-    /** @var class-string<\Database\Factories\Catalog\ProductFactory> */
-    protected static $factory = \Database\Factories\Catalog\ProductFactory::class;
+    use HasFactory;
+
+    /** @var class-string<ProductFactory> */
+    protected static $factory = ProductFactory::class;
 
     protected $fillable = [
         'sku',
@@ -45,7 +50,7 @@ class Product extends Model
 
     public function orderItems(): HasMany
     {
-        return $this->hasMany(\App\Infrastructure\Persistence\Eloquent\Sales\OrderItem::class);
+        return $this->hasMany(OrderItem::class);
     }
 
     #[Scope]

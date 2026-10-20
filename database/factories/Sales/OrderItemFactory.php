@@ -13,12 +13,10 @@ class OrderItemFactory extends Factory
 
     public function definition(): array
     {
-        $product = Product::factory();
-
         return [
             'order_id' => Order::factory(),
-            'product_id' => $product,
-            'product_name' => fn (array $attributes) => Product::find($attributes['product_id'])?->name ?? 'Producto eliminado',
+            'product_id' => Product::factory(),
+            'product_name' => $this->faker->words(3, true),
             'unit_price' => $this->faker->randomFloat(2, 10, 5000),
             'quantity' => $this->faker->numberBetween(1, 5),
             'subtotal' => fn (array $attributes) => round($attributes['unit_price'] * $attributes['quantity'], 2),

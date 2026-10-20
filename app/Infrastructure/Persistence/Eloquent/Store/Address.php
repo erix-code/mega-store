@@ -3,13 +3,17 @@
 namespace App\Infrastructure\Persistence\Eloquent\Store;
 
 use App\Models\User;
+use Database\Factories\Store\AddressFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Address extends Model
 {
-    /** @var class-string<\Database\Factories\Store\AddressFactory> */
-    protected static $factory = \Database\Factories\Store\AddressFactory::class;
+    use HasFactory;
+
+    /** @var class-string<AddressFactory> */
+    protected static $factory = AddressFactory::class;
 
     protected $fillable = [
         'user_id',
