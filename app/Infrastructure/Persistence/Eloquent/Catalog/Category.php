@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Persistence\Eloquent\Catalog;
 
 use Database\Factories\Catalog\CategoryFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[Fillable(['name', 'slug', 'description', 'parent_id', 'is_active'])]
 class Category extends Model
 {
     use HasFactory;
@@ -17,19 +19,16 @@ class Category extends Model
     /** @var class-string<CategoryFactory> */
     protected static $factory = CategoryFactory::class;
 
-    protected $fillable = [
-        'name',
-        'slug',
-        'description',
-        'parent_id',
-        'is_active',
-    ];
-
     protected function casts(): array
     {
         return [
             'is_active' => 'boolean',
         ];
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 
     public function parent(): BelongsTo
