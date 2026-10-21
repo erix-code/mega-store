@@ -29,6 +29,7 @@ class StoreOrderRequest extends FormRequest
             'items.*.quantity' => ['required', 'integer', 'min:1', 'max:1000'],
             'customer_name' => ['nullable', 'string', 'max:150'],
             'customer_email' => ['nullable', 'email', 'max:255'],
+            'customer_phone' => ['nullable', 'string', 'max:30'],
             'address_id' => [
                 'nullable',
                 'integer',

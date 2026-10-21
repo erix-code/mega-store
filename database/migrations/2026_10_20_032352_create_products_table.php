@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->unsignedInteger('stock')->default(0);
+            $table->foreignId('store_id')->constrained()->restrictOnDelete();
             $table->foreignId('category_id')->constrained()->restrictOnDelete();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

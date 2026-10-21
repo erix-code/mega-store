@@ -6,6 +6,7 @@ use App\Domain\Sales\ValueObjects\OrderStatus;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Product;
 use App\Infrastructure\Persistence\Eloquent\Sales\Order;
 use App\Infrastructure\Persistence\Eloquent\Store\Address;
+use App\Infrastructure\Persistence\Eloquent\Store\Client;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -18,12 +19,19 @@ class PlaceOrder
     public function handle(User $user, array $data): Order
     {
         return DB::transaction(function () use ($user, $data): Order {
+            $client = Client::firstOrCreate(
+                ['email' => $data['customer_email'] ?? $user->email],
+                [
+                    'user_id' => $user->id,
+                    'name' => $data['customer_name'] ?? $user->name,
+                    'phone' => $data['customer_phone'] ?? null,
+                ],
+            );
+
             $order = Order::create([
-                'user_id' => $user->id,
+                'client_id' => $client->id,
                 'status' => OrderStatus::Pending,
                 'total' => 0,
-                'customer_name' => $data['customer_name'] ?? $user->name,
-                'customer_email' => $data['customer_email'] ?? $user->email,
                 'shipping_address' => isset($data['address_id'])
                     ? $this->resolveShippingAddress($user, (int) $data['address_id'])
                     : $this->normalizeShippingAddress($data['shipping_address']),
@@ -60,7 +68,7 @@ class PlaceOrder
 
             $order->update(['total' => $total]);
 
-            return $order->load('items');
+            return $order->load(['items', 'client']);
         });
     }
 

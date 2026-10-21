@@ -14,11 +14,9 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('client_id')->constrained()->restrictOnDelete();
             $table->string('status', 20)->default(OrderStatus::Pending->value)->index();
             $table->decimal('total', 12, 2)->default(0);
-            $table->string('customer_name', 150);
-            $table->string('customer_email');
             $table->json('shipping_address');
             $table->timestamps();
         });

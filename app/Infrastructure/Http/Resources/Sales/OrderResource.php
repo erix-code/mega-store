@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Http\Resources\Sales;
 
+use App\Infrastructure\Http\Resources\Store\ClientResource;
 use App\Infrastructure\Persistence\Eloquent\Sales\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -15,8 +16,7 @@ class OrderResource extends JsonResource
             'id' => $this->id,
             'status' => $this->status,
             'total' => (float) $this->total,
-            'customer_name' => $this->customer_name,
-            'customer_email' => $this->customer_email,
+            'client' => new ClientResource($this->whenLoaded('client')),
             'shipping_address' => $this->shipping_address,
             'items' => OrderItemResource::collection($this->whenLoaded('items')),
             'created_at' => $this->created_at,

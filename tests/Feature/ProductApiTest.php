@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Category;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Product;
 use App\Infrastructure\Persistence\Eloquent\Catalog\ProductImage;
+use App\Infrastructure\Persistence\Eloquent\Store\Store;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -27,6 +28,19 @@ class ProductApiTest extends TestCase
                 'meta' => ['current_page', 'total', 'per_page', 'last_page'],
                 'links' => ['first', 'last', 'prev', 'next'],
             ]);
+    }
+
+    public function test_filters_products_by_store(): void
+    {
+        $store = Store::factory()->create(['name' => 'Mega Tienda Norte', 'slug' => 'mega-tienda-norte']);
+        Product::factory()->for($store, 'store')->create(['name' => 'Producto Norte']);
+        Product::factory()->create(['name' => 'Producto Otra Tienda']);
+
+        $this->getJson('/api/v1/products?store=mega-tienda-norte')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Producto Norte')
+            ->assertJsonPath('data.0.store.slug', 'mega-tienda-norte');
     }
 
     public function test_filters_products_by_category(): void

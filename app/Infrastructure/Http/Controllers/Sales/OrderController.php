@@ -18,7 +18,7 @@ class OrderController extends Controller
     {
         $orders = $request->user()
             ->orders()
-            ->with('items')
+            ->with(['items', 'client'])
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->paginate(15);
@@ -36,7 +36,7 @@ class OrderController extends Controller
     public function show(Request $request, int $order): OrderResource
     {
         return new OrderResource(
-            $request->user()->orders()->with('items')->findOrFail($order)
+            $request->user()->orders()->with(['items', 'client'])->findOrFail($order)
         );
     }
 }

@@ -18,12 +18,12 @@ class OrdersTable
                 TextColumn::make('id')
                     ->label('#')
                     ->sortable(),
-                TextColumn::make('user.name')
-                    ->label('Usuario')
-                    ->searchable()
-                    ->placeholder('Invitado'),
-                TextColumn::make('customer_name')
+                TextColumn::make('client.name')
                     ->label('Cliente')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('client.email')
+                    ->label('Email')
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('status')

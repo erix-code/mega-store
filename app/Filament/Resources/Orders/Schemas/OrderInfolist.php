@@ -36,12 +36,15 @@ class OrderInfolist
                 Section::make('Cliente')
                     ->columns(2)
                     ->components([
-                        TextEntry::make('customer_name')
+                        TextEntry::make('client.name')
                             ->label('Nombre'),
-                        TextEntry::make('customer_email')
+                        TextEntry::make('client.email')
                             ->label('Email'),
-                        TextEntry::make('user.name')
-                            ->label('Usuario registrado')
+                        TextEntry::make('client.phone')
+                            ->label('Teléfono')
+                            ->placeholder('—'),
+                        TextEntry::make('client.user.name')
+                            ->label('Cuenta de usuario')
                             ->placeholder('Compra de invitado'),
                         TextEntry::make('created_at')
                             ->label('Fecha')

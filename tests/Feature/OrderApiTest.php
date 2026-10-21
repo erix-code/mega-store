@@ -6,6 +6,7 @@ use App\Infrastructure\Persistence\Eloquent\Catalog\Product;
 use App\Infrastructure\Persistence\Eloquent\Sales\Order;
 use App\Infrastructure\Persistence\Eloquent\Sales\OrderItem;
 use App\Infrastructure\Persistence\Eloquent\Store\Address;
+use App\Infrastructure\Persistence\Eloquent\Store\Client;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -43,13 +44,18 @@ class OrderApiTest extends TestCase
         $response->assertCreated()
             ->assertJsonPath('data.status', 'pending')
             ->assertJsonPath('data.total', 226)
-            ->assertJsonPath('data.customer_name', 'Juan Perez')
-            ->assertJsonPath('data.customer_email', 'juan@example.com')
+            ->assertJsonPath('data.client.name', 'Juan Perez')
+            ->assertJsonPath('data.client.email', 'juan@example.com')
             ->assertJsonPath('data.shipping_address.line1', 'Av. Reforma 100')
             ->assertJsonCount(2, 'data.items');
 
+        $client = Client::where('email', 'juan@example.com')->first();
+
+        $this->assertNotNull($client);
+        $this->assertTrue($client->user->is($user));
+
         $this->assertDatabaseHas('orders', [
-            'user_id' => $user->id,
+            'client_id' => $client->id,
             'status' => 'pending',
             'total' => 226.00,
         ]);
@@ -142,15 +148,35 @@ class OrderApiTest extends TestCase
             ->assertJsonValidationErrors(['items', 'shipping_address']);
     }
 
+    public function test_reuses_the_same_client_for_repeated_emails(): void
+    {
+        $user = User::factory()->create(['name' => 'Juan Perez', 'email' => 'juan@example.com']);
+        $product = Product::factory()->create(['price' => 10, 'stock' => 20]);
+
+        foreach ([1, 2] as $i) {
+            $this->actingAs($user, 'sanctum')
+                ->postJson('/api/v1/orders', [
+                    'items' => [['product_id' => $product->id, 'quantity' => 1]],
+                    'shipping_address' => $this->shippingAddress(),
+                ])
+                ->assertCreated();
+        }
+
+        $this->assertDatabaseCount('clients', 1);
+        $this->assertDatabaseCount('orders', 2);
+    }
+
     public function test_lists_only_the_authenticated_users_orders(): void
     {
         $user = User::factory()->create();
         $other = User::factory()->create();
+        $userClient = Client::factory()->forUser($user)->create();
+        $otherClient = Client::factory()->forUser($other)->create();
 
-        $order = Order::factory()->recycle($user)->create();
+        $order = Order::factory()->forClient($userClient)->create();
         OrderItem::factory()->forProduct($this->makeProduct())->for($order)->create();
-        Order::factory()->recycle($user)->create();
-        Order::factory()->recycle($other)->create();
+        Order::factory()->forClient($userClient)->create();
+        Order::factory()->forClient($otherClient)->create();
 
         $response = $this->actingAs($user, 'sanctum')
             ->getJson('/api/v1/orders')
@@ -165,7 +191,8 @@ class OrderApiTest extends TestCase
     public function test_shows_own_order(): void
     {
         $user = User::factory()->create();
-        $order = Order::factory()->recycle($user)->create();
+        $client = Client::factory()->forUser($user)->create();
+        $order = Order::factory()->forClient($client)->create();
         OrderItem::factory()->count(2)->sequence(
             ['product_id' => Product::factory(), 'product_name' => 'Item A', 'unit_price' => 10, 'quantity' => 1, 'subtotal' => 10],
             ['product_id' => Product::factory(), 'product_name' => 'Item B', 'unit_price' => 20, 'quantity' => 2, 'subtotal' => 40],
@@ -175,6 +202,7 @@ class OrderApiTest extends TestCase
             ->getJson("/api/v1/orders/{$order->id}")
             ->assertOk()
             ->assertJsonPath('data.id', $order->id)
+            ->assertJsonPath('data.client.email', $client->email)
             ->assertJsonCount(2, 'data.items');
     }
 
@@ -182,7 +210,8 @@ class OrderApiTest extends TestCase
     {
         $owner = User::factory()->create();
         $intruder = User::factory()->create();
-        $order = Order::factory()->recycle($owner)->create();
+        $ownerClient = Client::factory()->forUser($owner)->create();
+        $order = Order::factory()->forClient($ownerClient)->create();
 
         $this->actingAs($intruder, 'sanctum')
             ->getJson("/api/v1/orders/{$order->id}")

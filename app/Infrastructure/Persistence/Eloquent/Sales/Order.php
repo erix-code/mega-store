@@ -3,7 +3,7 @@
 namespace App\Infrastructure\Persistence\Eloquent\Sales;
 
 use App\Domain\Sales\ValueObjects\OrderStatus;
-use App\Models\User;
+use App\Infrastructure\Persistence\Eloquent\Store\Client;
 use Database\Factories\Sales\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['user_id', 'status', 'total', 'customer_name', 'customer_email', 'shipping_address'])]
+#[Fillable(['client_id', 'status', 'total', 'shipping_address'])]
 class Order extends Model
 {
     use HasFactory;
@@ -30,9 +30,9 @@ class Order extends Model
         ];
     }
 
-    public function user(): BelongsTo
+    public function client(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Client::class);
     }
 
     public function items(): HasMany

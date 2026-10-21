@@ -15,6 +15,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'q' => ['nullable', 'string', 'max:255'],
             'category' => ['nullable', 'string', 'max:170'],
+            'store' => ['nullable', 'string', 'max:170'],
             'min_price' => ['nullable', 'numeric', 'min:0'],
             'max_price' => ['nullable', 'numeric', 'min:0'],
             'in_stock' => ['nullable', 'boolean'],
@@ -30,10 +31,14 @@ class ProductController extends Controller
         };
 
         $products = Product::active()
-            ->with('category')
+            ->with(['store', 'category'])
             ->when($validated['category'] ?? null, fn ($query) => $query->whereHas(
                 'category',
                 fn ($category) => $category->where('slug', $validated['category'])
+            ))
+            ->when($validated['store'] ?? null, fn ($query) => $query->whereHas(
+                'store',
+                fn ($store) => $store->where('slug', $validated['store'])
             ))
             ->when($validated['q'] ?? null, fn ($query) => $query->where(fn ($where) => $where
                 ->where('name', 'like', '%'.$validated['q'].'%')
@@ -54,6 +59,7 @@ class ProductController extends Controller
 
         return new ProductResource(
             $product->load([
+                'store',
                 'category',
                 'images' => fn ($query) => $query->orderByDesc('is_main')->orderBy('id'),
             ])

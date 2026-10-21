@@ -36,6 +36,11 @@ class ProductsTable
                     ->numeric()
                     ->sortable()
                     ->color(fn (int $state): string => $state === 0 ? 'danger' : ($state < 5 ? 'warning' : 'success')),
+                TextColumn::make('store.name')
+                    ->label('Tienda')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('—'),
                 TextColumn::make('category.name')
                     ->label('Categoría')
                     ->searchable()
@@ -53,6 +58,11 @@ class ProductsTable
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Activo'),
+                SelectFilter::make('store_id')
+                    ->label('Tienda')
+                    ->relationship('store', 'name')
+                    ->searchable()
+                    ->preload(),
                 SelectFilter::make('category_id')
                     ->label('Categoría')
                     ->relationship('category', 'name')

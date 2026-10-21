@@ -22,19 +22,20 @@ class OrderForm
                             ->required(),
                     ]),
                 Section::make('Datos del pedido (solo lectura)')
+                    ->columns(2)
                     ->components([
-                        TextInput::make('customer_name')
+                        TextInput::make('client.name')
                             ->label('Cliente')
                             ->disabled(),
-                        TextInput::make('customer_email')
+                        TextInput::make('client.email')
                             ->label('Email')
                             ->disabled(),
                         TextInput::make('total')
                             ->label('Total')
                             ->prefix('MX$')
                             ->disabled(),
-                        TextInput::make('user.name')
-                            ->label('Usuario registrado')
+                        TextInput::make('created_at')
+                            ->label('Fecha')
                             ->disabled(),
                     ]),
             ]);

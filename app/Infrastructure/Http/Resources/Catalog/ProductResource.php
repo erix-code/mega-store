@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Http\Resources\Catalog;
 
+use App\Infrastructure\Http\Resources\Store\StoreResource;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -20,6 +21,7 @@ class ProductResource extends JsonResource
             'price' => (float) $this->price,
             'stock' => $this->stock,
             'is_active' => $this->is_active,
+            'store' => new StoreResource($this->whenLoaded('store')),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'images' => ProductImageResource::collection($this->whenLoaded('images')),
             'created_at' => $this->created_at,

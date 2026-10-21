@@ -4,6 +4,7 @@ namespace Database\Factories\Catalog;
 
 use App\Infrastructure\Persistence\Eloquent\Catalog\Category;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Product;
+use App\Infrastructure\Persistence\Eloquent\Store\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -22,6 +23,7 @@ class ProductFactory extends Factory
             'description' => $this->faker->paragraph(),
             'price' => $this->faker->randomFloat(2, 10, 5000),
             'stock' => $this->faker->numberBetween(0, 100),
+            'store_id' => Store::factory(),
             'category_id' => Category::factory(),
             'is_active' => true,
         ];

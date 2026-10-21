@@ -8,6 +8,7 @@ use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Category;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Product;
 use App\Infrastructure\Persistence\Eloquent\Sales\Order;
+use App\Infrastructure\Persistence\Eloquent\Store\Store;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -63,6 +64,7 @@ class AdminPanelTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
         $category = Category::factory()->create();
+        $store = Store::factory()->create();
 
         Livewire::actingAs($admin)
             ->test(CreateProduct::class)
@@ -72,6 +74,7 @@ class AdminPanelTest extends TestCase
                 'slug' => 'producto-de-prueba',
                 'price' => 199.99,
                 'stock' => 10,
+                'store_id' => $store->id,
                 'category_id' => $category->id,
                 'is_active' => true,
             ])
@@ -82,6 +85,7 @@ class AdminPanelTest extends TestCase
             'sku' => 'SKU-99999',
             'name' => 'Producto de prueba',
             'price' => 199.99,
+            'store_id' => $store->id,
             'category_id' => $category->id,
         ]);
     }

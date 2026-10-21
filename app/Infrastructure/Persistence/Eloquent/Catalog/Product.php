@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Persistence\Eloquent\Catalog;
 
 use App\Infrastructure\Persistence\Eloquent\Sales\OrderItem;
+use App\Infrastructure\Persistence\Eloquent\Store\Store;
 use Database\Factories\Catalog\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['sku', 'name', 'slug', 'description', 'price', 'stock', 'category_id', 'is_active'])]
+#[Fillable(['sku', 'name', 'slug', 'description', 'price', 'stock', 'store_id', 'category_id', 'is_active'])]
 class Product extends Model
 {
     use HasFactory;
@@ -32,6 +33,11 @@ class Product extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
     }
 
     public function category(): BelongsTo

@@ -45,6 +45,12 @@ class ProductForm
                     ->numeric()
                     ->minValue(0)
                     ->default(0),
+                Select::make('store_id')
+                    ->label('Tienda')
+                    ->relationship('store', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 Select::make('category_id')
                     ->label('Categoría')
                     ->relationship('category', 'name')

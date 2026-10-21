@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Category;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Product;
 use App\Infrastructure\Persistence\Eloquent\Catalog\ProductImage;
+use App\Infrastructure\Persistence\Eloquent\Store\Store;
 use Illuminate\Database\Seeder;
 
 class CatalogSeeder extends Seeder
@@ -21,10 +22,12 @@ class CatalogSeeder extends Seeder
         ]));
 
         $subcategories = Category::whereNotNull('parent_id')->get();
+        $stores = Store::all();
 
         Product::factory()
             ->count(30)
             ->recycle($subcategories)
+            ->recycle($stores)
             ->create();
 
         Product::all()->each(function (Product $product) {
