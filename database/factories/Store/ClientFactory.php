@@ -3,6 +3,7 @@
 namespace Database\Factories\Store;
 
 use App\Infrastructure\Persistence\Eloquent\Store\Client;
+use App\Infrastructure\Persistence\Eloquent\Store\Store;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,10 +15,16 @@ class ClientFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
+            'store_id' => null,
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'phone' => $this->faker->numerify('##########'),
         ];
+    }
+
+    public function forStore(Store $store): static
+    {
+        return $this->state(fn (array $attributes) => ['store_id' => $store->id]);
     }
 
     public function forUser(User $user): static

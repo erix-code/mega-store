@@ -12,7 +12,7 @@ class StoreController extends Controller
     public function index(): AnonymousResourceCollection
     {
         return StoreResource::collection(
-            Store::active()->orderBy('name')->get()
+            Store::active()->with('configuration')->orderBy('name')->get()
         );
     }
 
@@ -20,6 +20,6 @@ class StoreController extends Controller
     {
         abort_unless($store->is_active, 404);
 
-        return new StoreResource($store);
+        return new StoreResource($store->load('configuration'));
     }
 }

@@ -5,6 +5,8 @@ use App\Infrastructure\Http\Controllers\Catalog\CategoryController;
 use App\Infrastructure\Http\Controllers\Catalog\ProductController;
 use App\Infrastructure\Http\Controllers\Sales\OrderController;
 use App\Infrastructure\Http\Controllers\Store\AddressController;
+use App\Infrastructure\Http\Controllers\Store\ClientAddressController;
+use App\Infrastructure\Http\Controllers\Store\ClientController;
 use App\Infrastructure\Http\Controllers\Store\StoreController;
 use App\Infrastructure\Http\Resources\Store\UserResource;
 use Illuminate\Http\Request;
@@ -26,5 +28,10 @@ Route::prefix('v1')->name('api.')->group(function (): void {
 
         Route::apiResource('addresses', AddressController::class)->names('addresses');
         Route::apiResource('orders', OrderController::class)->only(['index', 'store', 'show'])->names('orders');
+
+        Route::middleware('admin')->group(function (): void {
+            Route::apiResource('clients', ClientController::class);
+            Route::apiResource('clients.addresses', ClientAddressController::class)->names('clients.addresses');
+        });
     });
 });

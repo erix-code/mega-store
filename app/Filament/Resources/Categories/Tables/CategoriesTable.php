@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
@@ -20,6 +21,12 @@ class CategoriesTable
                     ->label('Nombre')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('store.name')
+                    ->label('Tienda')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('Global')
+                    ->toggleable(),
                 TextColumn::make('parent.name')
                     ->label('Padre')
                     ->searchable()
@@ -41,6 +48,11 @@ class CategoriesTable
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Activa'),
+                SelectFilter::make('store_id')
+                    ->label('Tienda')
+                    ->relationship('store', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->recordActions([
                 EditAction::make(),

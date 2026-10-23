@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Infrastructure\Persistence\Eloquent\Store\Store;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -30,6 +31,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'is_admin' => false,
+            'store_id' => null,
             'remember_token' => Str::random(10),
         ];
     }
@@ -51,6 +53,16 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_admin' => true,
+        ]);
+    }
+
+    /**
+     * Indicate that the user administers a specific store.
+     */
+    public function forStore(Store $store): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'store_id' => $store->id,
         ]);
     }
 }

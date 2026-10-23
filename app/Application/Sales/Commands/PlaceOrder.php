@@ -68,8 +68,40 @@ class PlaceOrder
 
             $order->update(['total' => $total]);
 
+            $this->rememberClientAddress($client, $order->shipping_address);
+
             return $order->load(['items', 'client']);
         });
+    }
+
+    /**
+     * Keep track of where the client lives by storing the shipping address
+     * used at checkout, skipping duplicates.
+     *
+     * @param  array<string, mixed>  $shippingAddress
+     */
+    private function rememberClientAddress(Client $client, array $shippingAddress): void
+    {
+        $alreadyKnown = $client->addresses()
+            ->where('line1', $shippingAddress['line1'] ?? '')
+            ->where('postal_code', $shippingAddress['postal_code'] ?? '')
+            ->exists();
+
+        if ($alreadyKnown) {
+            return;
+        }
+
+        $client->addresses()->create([
+            'recipient_name' => $shippingAddress['recipient_name'] ?? $client->name,
+            'phone' => $shippingAddress['phone'] ?? $client->phone,
+            'line1' => $shippingAddress['line1'],
+            'line2' => $shippingAddress['line2'] ?? null,
+            'city' => $shippingAddress['city'] ?? null,
+            'state' => $shippingAddress['state'] ?? null,
+            'postal_code' => $shippingAddress['postal_code'] ?? null,
+            'country' => $shippingAddress['country'] ?? 'MX',
+            'is_default' => $client->addresses()->count() === 0,
+        ]);
     }
 
     /**

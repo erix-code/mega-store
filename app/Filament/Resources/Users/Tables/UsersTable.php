@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
@@ -36,6 +37,12 @@ class UsersTable
                 IconColumn::make('is_admin')
                     ->label('Admin')
                     ->boolean(),
+                TextColumn::make('store.name')
+                    ->label('Tienda')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('Global')
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->label('Registro')
                     ->dateTime('d/m/Y')
@@ -45,6 +52,11 @@ class UsersTable
             ->filters([
                 TernaryFilter::make('is_admin')
                     ->label('Administrador'),
+                SelectFilter::make('store_id')
+                    ->label('Tienda')
+                    ->relationship('store', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->recordActions([
                 ViewAction::make(),

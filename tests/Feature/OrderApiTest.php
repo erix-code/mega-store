@@ -69,6 +69,12 @@ class OrderApiTest extends TestCase
 
         $this->assertSame(8, $product->fresh()->stock);
         $this->assertSame(4, $other->fresh()->stock);
+
+        $this->assertDatabaseHas('client_addresses', [
+            'client_id' => $client->id,
+            'line1' => 'Av. Reforma 100',
+            'is_default' => true,
+        ]);
     }
 
     public function test_places_an_order_using_a_saved_address(): void
@@ -164,6 +170,7 @@ class OrderApiTest extends TestCase
 
         $this->assertDatabaseCount('clients', 1);
         $this->assertDatabaseCount('orders', 2);
+        $this->assertDatabaseCount('client_addresses', 1);
     }
 
     public function test_lists_only_the_authenticated_users_orders(): void

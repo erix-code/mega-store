@@ -24,6 +24,20 @@ class StoresTable
                     ->label('Productos')
                     ->counts('products')
                     ->sortable(),
+                TextColumn::make('categories_count')
+                    ->label('Categorías')
+                    ->counts('categories')
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('users_count')
+                    ->label('Administradores')
+                    ->counts('users')
+                    ->toggleable(),
+                TextColumn::make('clients_count')
+                    ->label('Clientes')
+                    ->counts('clients')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('email')
                     ->label('Email')
                     ->searchable()

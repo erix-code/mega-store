@@ -30,6 +30,13 @@ class CategoryForm
                     ->label('Descripción')
                     ->maxLength(65535)
                     ->columnSpanFull(),
+                Select::make('store_id')
+                    ->label('Tienda')
+                    ->relationship('store', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->helperText('Vacío = categoría global (visible en todas las tiendas)')
+                    ->default(null),
                 Select::make('parent_id')
                     ->label('Categoría padre')
                     ->relationship(

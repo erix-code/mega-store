@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Domain\Sales\ValueObjects\OrderStatus;
 use App\Filament\Resources\Orders\Pages\EditOrder;
 use App\Filament\Resources\Products\Pages\CreateProduct;
+use App\Filament\Resources\Stores\Pages\EditStore;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Category;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Product;
 use App\Infrastructure\Persistence\Eloquent\Sales\Order;
@@ -17,6 +18,35 @@ use Tests\TestCase;
 class AdminPanelTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_admin_users_can_update_store_configuration(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $store = Store::factory()->create();
+
+        Livewire::actingAs($admin)
+            ->test(EditStore::class, ['record' => $store->getRouteKey()])
+            ->fillForm([
+                'configuration.main_color' => '#FF0000',
+                'configuration.second_color' => '#00FF00',
+                'configuration.third_color' => '#0000FF',
+                'configuration.address' => 'Calle Test 123',
+                'configuration.latitude' => '19.4326',
+                'configuration.longitude' => '-99.1332',
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('store_configurations', [
+            'store_id' => $store->id,
+            'main_color' => '#FF0000',
+            'second_color' => '#00FF00',
+            'third_color' => '#0000FF',
+            'address' => 'Calle Test 123',
+            'latitude' => 19.4326000,
+            'longitude' => -99.1332000,
+        ]);
+    }
 
     public function test_guests_are_redirected_to_the_login_page(): void
     {

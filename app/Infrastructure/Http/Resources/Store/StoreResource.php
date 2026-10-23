@@ -19,6 +19,7 @@ class StoreResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'is_active' => $this->is_active,
+            'configuration' => new StoreConfigurationResource($this->whenLoaded('configuration')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

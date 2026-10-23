@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Infrastructure\Persistence\Eloquent\Catalog\Category;
+use App\Infrastructure\Persistence\Eloquent\Store\Store;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -28,6 +29,25 @@ class CategoryApiTest extends TestCase
         $electronicsData = collect($response->json('data'))->firstWhere('slug', 'electronics');
 
         $this->assertSame(['phones'], collect($electronicsData['children'])->pluck('slug')->all());
+    }
+
+    public function test_filters_categories_by_store_including_global_ones(): void
+    {
+        $centro = Store::factory()->create(['name' => 'Mega Tienda Centro', 'slug' => 'mega-tienda-centro']);
+        $norte = Store::factory()->create(['name' => 'Mega Tienda Norte', 'slug' => 'mega-tienda-norte']);
+
+        Category::factory()->forStore($centro)->create(['name' => 'Centro Cat', 'slug' => 'centro-cat']);
+        Category::factory()->forStore($norte)->create(['name' => 'Norte Cat', 'slug' => 'norte-cat']);
+        Category::factory()->create(['name' => 'Global Cat', 'slug' => 'global-cat']);
+
+        $response = $this->getJson('/api/v1/categories?store=mega-tienda-centro')
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+
+        $this->assertEqualsCanonicalizing(
+            ['centro-cat', 'global-cat'],
+            collect($response->json('data'))->pluck('slug')->all()
+        );
     }
 
     public function test_shows_a_category_by_slug(): void

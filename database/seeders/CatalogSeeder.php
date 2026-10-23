@@ -15,14 +15,22 @@ class CatalogSeeder extends Seeder
      */
     public function run(): void
     {
+        $stores = Store::all();
+
         $rootCategories = Category::factory()->count(5)->create();
 
-        $rootCategories->each(fn (Category $root) => Category::factory()->count(2)->create([
-            'parent_id' => $root->id,
-        ]));
+        $rootCategories->each(function (Category $root) use ($stores): void {
+            if ($stores->isNotEmpty() && fake()->boolean(80)) {
+                $root->update(['store_id' => $stores->random()->id]);
+            }
+
+            Category::factory()->count(2)->create([
+                'parent_id' => $root->id,
+                'store_id' => $root->store_id,
+            ]);
+        });
 
         $subcategories = Category::whereNotNull('parent_id')->get();
-        $stores = Store::all();
 
         Product::factory()
             ->count(30)
