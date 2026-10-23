@@ -26,7 +26,6 @@ class SaveClientRequest extends FormRequest
                 Rule::unique('clients', 'email')->ignore($this->route('client')),
             ],
             'phone' => ['nullable', 'string', 'max:30'],
-            'user_id' => ['nullable', 'integer', Rule::exists('users', 'id')],
             'store_id' => ['nullable', 'integer', Rule::exists('stores', 'id')],
         ];
     }

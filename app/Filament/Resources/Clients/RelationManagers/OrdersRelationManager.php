@@ -40,7 +40,7 @@ class OrdersRelationManager extends RelationManager
                     ->counts('items'),
                 TextColumn::make('total')
                     ->label('Total')
-                    ->money('MXN'),
+                    ->money(currency()),
                 TextColumn::make('created_at')
                     ->label('Fecha')
                     ->dateTime('d/m/Y H:i'),

@@ -16,7 +16,6 @@ class ClientResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
-            'user_id' => $this->user_id,
             'store' => new StoreResource($this->whenLoaded('store')),
             'addresses' => ClientAddressResource::collection($this->whenLoaded('addresses')),
             'orders_count' => $this->whenCounted('orders'),

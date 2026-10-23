@@ -26,10 +26,6 @@ class UsersTable
                     ->label('Email')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('orders_count')
-                    ->label('Órdenes')
-                    ->counts('orders')
-                    ->sortable(),
                 TextColumn::make('addresses_count')
                     ->label('Direcciones')
                     ->counts('addresses')

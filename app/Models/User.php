@@ -4,17 +4,16 @@ namespace App\Models;
 
 use App\Infrastructure\Persistence\Eloquent\Sales\Order;
 use App\Infrastructure\Persistence\Eloquent\Store\Address;
-use App\Infrastructure\Persistence\Eloquent\Store\Client;
 use App\Infrastructure\Persistence\Eloquent\Store\Store;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -55,13 +54,14 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Address::class);
     }
 
-    public function clients(): HasMany
+    /**
+     * Orders placed by this account, matched through the client email.
+     */
+    public function orders(): Builder
     {
-        return $this->hasMany(Client::class);
-    }
-
-    public function orders(): HasManyThrough
-    {
-        return $this->hasManyThrough(Order::class, Client::class);
+        return Order::query()->whereHas(
+            'client',
+            fn ($query) => $query->where('email', $this->email)
+        );
     }
 }

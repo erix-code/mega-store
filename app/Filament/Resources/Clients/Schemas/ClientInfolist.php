@@ -23,9 +23,9 @@ class ClientInfolist
                         TextEntry::make('phone')
                             ->label('Teléfono')
                             ->placeholder('—'),
-                        TextEntry::make('user.email')
-                            ->label('Cuenta de usuario')
-                            ->placeholder('Sin cuenta registrada'),
+                        TextEntry::make('store.name')
+                            ->label('Tienda')
+                            ->placeholder('—'),
                         TextEntry::make('created_at')
                             ->label('Registro')
                             ->dateTime('d/m/Y H:i'),

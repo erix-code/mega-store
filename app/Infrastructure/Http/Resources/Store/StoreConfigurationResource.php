@@ -32,6 +32,9 @@ class StoreConfigurationResource extends JsonResource
             'country' => $this->country,
             'latitude' => $this->latitude !== null ? (float) $this->latitude : null,
             'longitude' => $this->longitude !== null ? (float) $this->longitude : null,
+            'maps_url' => $this->latitude !== null && $this->longitude !== null
+                ? sprintf('https://www.google.com/maps/search/?api=1&query=%s,%s', $this->latitude, $this->longitude)
+                : null,
         ];
     }
 }

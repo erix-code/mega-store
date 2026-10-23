@@ -70,18 +70,15 @@ class ClientApiTest extends TestCase
     public function test_admin_users_can_create_a_client(): void
     {
         $admin = User::factory()->admin()->create();
-        $user = User::factory()->create();
 
         $this->actingAs($admin, 'sanctum')
             ->postJson('/api/v1/clients', [
                 'name' => 'Cliente Nuevo',
                 'email' => 'nuevo@example.com',
                 'phone' => '5512345678',
-                'user_id' => $user->id,
             ])
             ->assertCreated()
-            ->assertJsonPath('data.name', 'Cliente Nuevo')
-            ->assertJsonPath('data.user_id', $user->id);
+            ->assertJsonPath('data.name', 'Cliente Nuevo');
 
         $this->assertDatabaseHas('clients', ['email' => 'nuevo@example.com']);
     }

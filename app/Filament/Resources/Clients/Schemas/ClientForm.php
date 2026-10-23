@@ -29,12 +29,6 @@ class ClientForm
                         TextInput::make('phone')
                             ->label('Teléfono')
                             ->maxLength(30),
-                        Select::make('user_id')
-                            ->label('Cuenta de usuario')
-                            ->relationship('user', 'email')
-                            ->searchable()
-                            ->preload()
-                            ->helperText('Vincular con una cuenta registrada (opcional)'),
                         Select::make('store_id')
                             ->label('Tienda')
                             ->relationship('store', 'name')

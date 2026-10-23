@@ -55,6 +55,7 @@ class StoreApiTest extends TestCase
             ->assertJsonPath('data.configuration.city', 'Ciudad de México')
             ->assertJsonPath('data.configuration.latitude', 19.4326)
             ->assertJsonPath('data.configuration.longitude', -99.1332)
+            ->assertJsonPath('data.configuration.maps_url', 'https://www.google.com/maps/search/?api=1&query=19.4326000,-99.1332000')
             ->assertJsonPath('data.configuration.logo_url', null);
     }
 

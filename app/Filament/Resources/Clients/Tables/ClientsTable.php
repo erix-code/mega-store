@@ -35,10 +35,6 @@ class ClientsTable
                     ->label('Órdenes')
                     ->counts('orders')
                     ->sortable(),
-                TextColumn::make('user.email')
-                    ->label('Cuenta')
-                    ->placeholder('—')
-                    ->toggleable(),
                 TextColumn::make('store.name')
                     ->label('Tienda')
                     ->searchable()

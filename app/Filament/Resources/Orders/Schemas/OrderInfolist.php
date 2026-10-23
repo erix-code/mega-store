@@ -31,7 +31,7 @@ class OrderInfolist
                             }),
                         TextEntry::make('total')
                             ->label('Total')
-                            ->money('MXN'),
+                            ->money(currency()),
                     ]),
                 Section::make('Cliente')
                     ->columns(2)

@@ -40,7 +40,7 @@ class OrderFactory extends Factory
     public function guest(): static
     {
         return $this->state(fn (array $attributes) => [
-            'client_id' => Client::factory()->guest(),
+            'client_id' => Client::factory(),
         ]);
     }
 }

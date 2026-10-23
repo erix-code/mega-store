@@ -42,7 +42,7 @@ class OrdersTable
                     ->counts('items'),
                 TextColumn::make('total')
                     ->label('Total')
-                    ->money('MXN')
+                    ->money(currency())
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Fecha')

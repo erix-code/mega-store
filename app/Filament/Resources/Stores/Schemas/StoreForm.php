@@ -4,11 +4,14 @@ namespace App\Filament\Resources\Stores\Schemas;
 
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class StoreForm
 {
@@ -113,12 +116,23 @@ class StoreForm
                             ->label('Latitud')
                             ->numeric()
                             ->minValue(-90)
-                            ->maxValue(90),
+                            ->maxValue(90)
+                            ->live(onBlur: true),
                         TextInput::make('longitude')
                             ->label('Longitud')
                             ->numeric()
                             ->minValue(-180)
-                            ->maxValue(180),
+                            ->maxValue(180)
+                            ->live(onBlur: true),
+                        Placeholder::make('mapPreview')
+                            ->label('Previsualización del mapa')
+                            ->content(fn (Get $get): HtmlString => new HtmlString(
+                                view('filament.store-map', [
+                                    'latitude' => $get('latitude'),
+                                    'longitude' => $get('longitude'),
+                                ])->render()
+                            ))
+                            ->columnSpanFull(),
                     ]),
             ]);
     }

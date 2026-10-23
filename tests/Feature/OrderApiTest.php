@@ -52,7 +52,6 @@ class OrderApiTest extends TestCase
         $client = Client::where('email', 'juan@example.com')->first();
 
         $this->assertNotNull($client);
-        $this->assertTrue($client->user->is($user));
 
         $this->assertDatabaseHas('orders', [
             'client_id' => $client->id,

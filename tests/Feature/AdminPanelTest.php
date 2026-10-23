@@ -3,13 +3,16 @@
 namespace Tests\Feature;
 
 use App\Domain\Sales\ValueObjects\OrderStatus;
+use App\Filament\Resources\Orders\Pages\CreateOrder;
 use App\Filament\Resources\Orders\Pages\EditOrder;
 use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Stores\Pages\EditStore;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Category;
 use App\Infrastructure\Persistence\Eloquent\Catalog\Product;
 use App\Infrastructure\Persistence\Eloquent\Sales\Order;
+use App\Infrastructure\Persistence\Eloquent\Store\Client;
 use App\Infrastructure\Persistence\Eloquent\Store\Store;
+use App\Infrastructure\Persistence\Eloquent\Store\StoreConfiguration;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -48,6 +51,20 @@ class AdminPanelTest extends TestCase
         ]);
     }
 
+    public function test_store_edit_page_shows_the_map_preview(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $store = Store::factory()->create();
+        StoreConfiguration::factory()
+            ->for($store, 'store')
+            ->create(['latitude' => 19.4326, 'longitude' => -99.1332]);
+
+        Livewire::actingAs($admin)
+            ->test(EditStore::class, ['record' => $store->getRouteKey()])
+            ->assertOk()
+            ->assertSee('maps.google.com');
+    }
+
     public function test_guests_are_redirected_to_the_login_page(): void
     {
         $this->get('/admin')->assertRedirect('/admin/login');
@@ -81,13 +98,41 @@ class AdminPanelTest extends TestCase
             ->assertOk();
     }
 
-    public function test_orders_cannot_be_created_from_the_panel(): void
+    public function test_orders_can_be_created_from_the_panel(): void
     {
         $admin = User::factory()->admin()->create();
+        $client = Client::factory()->create();
+        $product = Product::factory()->create(['name' => 'Producto Panel', 'price' => 50, 'stock' => 10]);
 
-        $this->actingAs($admin)
-            ->get('/admin/orders/create')
-            ->assertNotFound();
+        Livewire::actingAs($admin)
+            ->test(CreateOrder::class)
+            ->fillForm([
+                'client_id' => $client->id,
+                'status' => 'pending',
+                'items' => [
+                    ['product_id' => $product->id, 'quantity' => 2],
+                ],
+                'line1' => 'Calle Panel 123',
+                'city' => 'La Paz',
+                'state' => 'La Paz',
+                'postal_code' => '0000',
+                'country' => 'BO',
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('orders', [
+            'client_id' => $client->id,
+            'status' => 'pending',
+            'total' => 100.00,
+        ]);
+
+        $this->assertSame(8, $product->fresh()->stock);
+        $this->assertDatabaseHas('order_items', [
+            'product_id' => $product->id,
+            'quantity' => 2,
+            'subtotal' => 100.00,
+        ]);
     }
 
     public function test_admin_users_can_create_products(): void
@@ -101,7 +146,6 @@ class AdminPanelTest extends TestCase
             ->fillForm([
                 'sku' => 'SKU-99999',
                 'name' => 'Producto de prueba',
-                'slug' => 'producto-de-prueba',
                 'price' => 199.99,
                 'stock' => 10,
                 'store_id' => $store->id,
@@ -114,6 +158,7 @@ class AdminPanelTest extends TestCase
         $this->assertDatabaseHas('products', [
             'sku' => 'SKU-99999',
             'name' => 'Producto de prueba',
+            'slug' => 'producto-de-prueba',
             'price' => 199.99,
             'store_id' => $store->id,
             'category_id' => $category->id,

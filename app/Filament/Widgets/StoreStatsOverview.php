@@ -25,7 +25,7 @@ class StoreStatsOverview extends StatsOverviewWidget
                 ->description("{$pendingOrders} pendientes")
                 ->descriptionIcon('heroicon-m-shopping-cart')
                 ->color($pendingOrders > 0 ? 'warning' : 'gray'),
-            Stat::make('Ingresos', '$'.number_format($revenue, 2))
+            Stat::make('Ingresos', money($revenue))
                 ->description('Sin órdenes canceladas')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),

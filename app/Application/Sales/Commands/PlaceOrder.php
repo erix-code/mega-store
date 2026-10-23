@@ -18,28 +18,40 @@ class PlaceOrder
      */
     public function handle(User $user, array $data): Order
     {
-        return DB::transaction(function () use ($user, $data): Order {
-            $client = Client::firstOrCreate(
-                ['email' => $data['customer_email'] ?? $user->email],
-                [
-                    'user_id' => $user->id,
-                    'name' => $data['customer_name'] ?? $user->name,
-                    'phone' => $data['customer_phone'] ?? null,
-                ],
-            );
+        $client = Client::firstOrCreate(
+            ['email' => $data['customer_email'] ?? $user->email],
+            [
+                'name' => $data['customer_name'] ?? $user->name,
+                'phone' => $data['customer_phone'] ?? null,
+            ],
+        );
 
+        $shippingAddress = isset($data['address_id'])
+            ? $this->resolveShippingAddress($user, (int) $data['address_id'])
+            : $this->normalizeShippingAddress($data['shipping_address']);
+
+        return $this->place($client, $data['items'], $shippingAddress);
+    }
+
+    /**
+     * Place an order for a client, reserving stock inside a transaction.
+     *
+     * @param  array<int, array{product_id: int, quantity: int}>  $items
+     * @param  array<string, mixed>  $shippingAddress
+     */
+    public function place(Client $client, array $items, array $shippingAddress): Order
+    {
+        return DB::transaction(function () use ($client, $items, $shippingAddress): Order {
             $order = Order::create([
                 'client_id' => $client->id,
                 'status' => OrderStatus::Pending,
                 'total' => 0,
-                'shipping_address' => isset($data['address_id'])
-                    ? $this->resolveShippingAddress($user, (int) $data['address_id'])
-                    : $this->normalizeShippingAddress($data['shipping_address']),
+                'shipping_address' => $shippingAddress,
             ]);
 
             $total = 0.0;
 
-            foreach ($data['items'] as $item) {
+            foreach ($items as $item) {
                 $product = Product::query()
                     ->whereKey($item['product_id'])
                     ->where('is_active', true)

@@ -29,7 +29,7 @@ class ProductsTable
                     ->sortable(),
                 TextColumn::make('price')
                     ->label('Precio')
-                    ->money('MXN')
+                    ->money(currency())
                     ->sortable(),
                 TextColumn::make('stock')
                     ->label('Existencias')

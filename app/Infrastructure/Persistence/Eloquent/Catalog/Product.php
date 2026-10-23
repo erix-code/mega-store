@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 #[Fillable(['sku', 'name', 'slug', 'description', 'price', 'stock', 'store_id', 'category_id', 'is_active'])]
 class Product extends Model
@@ -20,6 +21,29 @@ class Product extends Model
 
     /** @var class-string<ProductFactory> */
     protected static $factory = ProductFactory::class;
+
+    protected static function booted(): void
+    {
+        static::creating(function (Product $product): void {
+            if (blank($product->slug)) {
+                $product->slug = $product->generateUniqueSlug($product->name);
+            }
+        });
+
+        static::updating(function (Product $product): void {
+            if (blank($product->slug)) {
+                $product->slug = $product->generateUniqueSlug($product->name);
+            }
+        });
+    }
+
+    private function generateUniqueSlug(string $name): string
+    {
+        $base = Str::slug($name);
+        $suffix = static::query()->where('slug', 'like', "{$base}%")->count();
+
+        return $suffix === 0 ? $base : "{$base}-{$suffix}";
+    }
 
     protected function casts(): array
     {

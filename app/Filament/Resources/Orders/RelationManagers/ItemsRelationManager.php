@@ -25,16 +25,16 @@ class ItemsRelationManager extends RelationManager
                     ->label('Producto'),
                 TextColumn::make('unit_price')
                     ->label('Precio unitario')
-                    ->money('MXN'),
+                    ->money(currency()),
                 TextColumn::make('quantity')
                     ->label('Cantidad')
                     ->numeric(),
                 TextColumn::make('subtotal')
                     ->label('Subtotal')
-                    ->money('MXN')
+                    ->money(currency())
                     ->summarize(Sum::make()
                         ->label('Total')
-                        ->money('MXN')),
+                        ->money(currency())),
             ]);
     }
 }

@@ -14,7 +14,6 @@ class ClientFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
             'store_id' => null,
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
@@ -27,17 +26,14 @@ class ClientFactory extends Factory
         return $this->state(fn (array $attributes) => ['store_id' => $store->id]);
     }
 
+    /**
+     * Client that matches a user account email.
+     */
     public function forUser(User $user): static
     {
         return $this->state(fn (array $attributes) => [
-            'user_id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
         ]);
-    }
-
-    public function guest(): static
-    {
-        return $this->state(fn (array $attributes) => ['user_id' => null]);
     }
 }
